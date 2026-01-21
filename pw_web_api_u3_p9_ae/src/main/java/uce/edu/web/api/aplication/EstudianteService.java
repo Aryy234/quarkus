@@ -1,7 +1,9 @@
 package uce.edu.web.api.aplication;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -61,6 +63,18 @@ public class EstudianteService {
                 estudianteExistente.setFechaNacimiento(estudiante.getFechaNacimiento());
             }
         }
+    }
+
+    public List<Estudiante> listarOrdenados(String campo, String orden) {
+        Sort.Direction direction = "desc".equalsIgnoreCase(orden) ? Sort.Direction.Descending : Sort.Direction.Ascending;
+        Sort sort = Sort.by(campo, direction);
+        return estudianteRepository.listAll(sort);
+    }
+
+    public List<Estudiante> buscarPorRangoEdad(Integer edadMin, Integer edadMax) {
+        LocalDateTime fechaMax = LocalDateTime.now().minusYears(edadMin);
+        LocalDateTime fechaMin = LocalDateTime.now().minusYears(edadMax + 1);
+        return estudianteRepository.find("fechaNacimiento >= ?1 and fechaNacimiento <= ?2", fechaMin, fechaMax).list();
     }
 
 }
