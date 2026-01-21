@@ -50,6 +50,20 @@ public class EstudianteResource {
     public void eliminarEstudiante(@PathParam("id") Integer id) {
         estudianteService.eliminarEstudiante(id);
     }
+
+    @GET
+    @Path("/buscar-por-provincia")
+    public List<Estudiante> buscarPorProvincia(@QueryParam("provincia") String provincia) {
+        return estudianteService.buscarPorProvincia(provincia);
+    }
+
+    @GET
+    @Path("/buscar-por-provincia-genero")
+    public List<Estudiante> buscarPorProvinciaGenero(
+            @QueryParam("provincia") String provincia,
+            @QueryParam("genero") String genero) {
+        return estudianteService.buscarPorProvinciaGenero(provincia, genero);
+    }
 //
     @PATCH
     @Path("/actualizar-parcial/{id}")

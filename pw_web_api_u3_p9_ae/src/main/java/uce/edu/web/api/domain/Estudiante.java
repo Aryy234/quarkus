@@ -21,6 +21,8 @@ public class Estudiante extends PanacheEntityBase {
     private String nombre;
     private String apellido;
     private LocalDateTime fechaNacimiento;
+    public String provincia;
+    public String genero;
 
     // Getters y Setters
     public Long getId() {
@@ -53,5 +55,17 @@ public class Estudiante extends PanacheEntityBase {
 
     public void setFechaNacimiento(LocalDateTime fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
+    }
+    public String getProvincia() {
+        return provincia;
+    }
+    public void setProvincia(String provincia) {
+        this.provincia = provincia;
+    }
+    public String getGenero() {
+        return genero;
+    }
+    public void setGenero(String genero) {
+        this.genero = genero;
     }
 }

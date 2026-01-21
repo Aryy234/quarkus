@@ -36,6 +36,9 @@ public class EstudianteService {
             estudianteExistente.setNombre(estudiante.getNombre());
             estudianteExistente.setApellido(estudiante.getApellido());
             estudianteExistente.setFechaNacimiento(estudiante.getFechaNacimiento());
+            if (estudiante.getProvincia() != null) {
+                estudianteExistente.setProvincia(estudiante.getProvincia());
+            }
             // JPA detecta automáticamente los cambios y los persiste
         }
     }
@@ -62,7 +65,18 @@ public class EstudianteService {
             if (estudiante.getFechaNacimiento() != null) {
                 estudianteExistente.setFechaNacimiento(estudiante.getFechaNacimiento());
             }
+            if (estudiante.getProvincia() != null) {
+                estudianteExistente.setProvincia(estudiante.getProvincia());
+            }
         }
+    }
+
+    public List<Estudiante> buscarPorProvincia(String provincia) {
+        return estudianteRepository.find("provincia", provincia).list();
+    }
+
+    public List<Estudiante> buscarPorProvinciaGenero(String provincia, String genero) {
+        return estudianteRepository.find("provincia = ?1 and genero = ?2", provincia, genero).list();
     }
 
     public List<Estudiante> listarOrdenados(String campo, String orden) {
