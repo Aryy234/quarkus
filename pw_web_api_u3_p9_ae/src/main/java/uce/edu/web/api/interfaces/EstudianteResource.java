@@ -21,44 +21,44 @@ public class EstudianteResource {
     private EstudianteService estudianteService;
 
     @GET
-    @Path("/todos")
+    @Path("")
     public List<?> listarTodos() {
         return estudianteService.listarTodos();
     }
 
     @GET
-    @Path("/consultar/{id}")
+    @Path("/{id}")
     public Estudiante consultarPorId(@PathParam("id") Integer id) {
         return estudianteService.consultarPorId(id);
     }
 
     
     @POST
-    @Path("/crear")
+    @Path("")
     public void guardarEstudiante(Estudiante estudiante) {
         estudianteService.crearEstudiante(estudiante);
     }
 
     @PUT
-    @Path("/actualizar/{id}")
+    @Path("/{id}")
     public void actualizarEstudiante(@PathParam("id") Integer id, Estudiante estudiante) {
         estudianteService.actualizarEstudiante(id, estudiante);
     }
 
     @DELETE
-    @Path("/eliminar/{id}")
+    @Path("/{id}")
     public void eliminarEstudiante(@PathParam("id") Integer id) {
         estudianteService.eliminarEstudiante(id);
     }
 
     @GET
-    @Path("/buscar-por-provincia")
+    @Path("/provincia")
     public List<Estudiante> buscarPorProvincia(@QueryParam("provincia") String provincia) {
         return estudianteService.buscarPorProvincia(provincia);
     }
 
     @GET
-    @Path("/buscar-por-provincia-genero")
+    @Path("/provincia-genero")
     public List<Estudiante> buscarPorProvinciaGenero(
             @QueryParam("provincia") String provincia,
             @QueryParam("genero") String genero) {
@@ -66,7 +66,7 @@ public class EstudianteResource {
     }
 //
     @PATCH
-    @Path("/actualizar-parcial/{id}")
+    @Path("/{id}")
     public void actualizarParcial(@PathParam("id") Integer id, Estudiante estudiante) {
         estudianteService.actualizarParcial(id, estudiante);
     }
