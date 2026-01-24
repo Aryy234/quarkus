@@ -1,66 +1,61 @@
 package uce.edu.web.api.domain;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.CascadeType;
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Estudiante")
-@SequenceGenerator(name = "estudiante_seq", sequenceName = "estudiante_secuencia", allocationSize = 1)    
-public class Estudiante extends PanacheEntityBase {
+@Table(name = "hijo")
+@SequenceGenerator(name = "hijo_seq", sequenceName = "hijo_secuencia", allocationSize = 1) 
 
+public class Hijo extends PanacheEntityBase {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "estudiante_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hijo_seq")
     private Long id;
     private String nombre;
     private String apellido;
-    private LocalDateTime fechaNacimiento;
-    public String provincia;
-    public String genero;
+    private LocalDate fechaNacimiento;
+    private String provincia;
+    private String genero;
 
-    @OneToMany(mappedBy = "estudiante", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Hijo> hijos;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "estudiante_id")
+    public Estudiante estudiante;
+    @JsonbTransient
 
     // Getters y Setters
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
-
     public String getNombre() {
         return nombre;
     }
-
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
     public String getApellido() {
         return apellido;
     }
-
     public void setApellido(String apellido) {
         this.apellido = apellido;
     }
-
-    public LocalDateTime getFechaNacimiento() {
+    public LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
-
-    public void setFechaNacimiento(LocalDateTime fechaNacimiento) {
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
     public String getProvincia() {
@@ -75,4 +70,6 @@ public class Estudiante extends PanacheEntityBase {
     public void setGenero(String genero) {
         this.genero = genero;
     }
+
+
 }
