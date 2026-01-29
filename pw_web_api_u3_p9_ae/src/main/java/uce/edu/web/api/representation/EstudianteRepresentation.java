@@ -1,6 +1,7 @@
 package uce.edu.web.api.representation;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class EstudianteRepresentation {
     private Long id;
@@ -9,6 +10,9 @@ public class EstudianteRepresentation {
     private LocalDateTime fechaNacimiento;
     public String provincia;
     public String genero;
+    //http://locahost:8080/estudiantes/1/hijos
+
+    public List<LinkDto> hijosLink;
 
     // Getters y Setters
     public Long getId() {

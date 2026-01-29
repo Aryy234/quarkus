@@ -13,12 +13,14 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import uce.edu.web.api.aplication.EstudianteService;
 import uce.edu.web.api.aplication.HijoService;
 import uce.edu.web.api.domain.Estudiante;
-import uce.edu.web.api.domain.Hijo;
+import uce.edu.web.api.representation.EstudianteRepresentation;
 
 @Path("/estudiantes")
 @Produces(MediaType.APPLICATION_JSON)
@@ -29,22 +31,32 @@ public class EstudianteResource {
 
     @Inject
     private HijoService hijoService;
+    
+    @Context
+    private UriInfo uriInfo;
 
     @GET
     @Path("")
     public Response listarTodos() {
-        List<Estudiante> estudiantes = estudianteService.listarTodos();
-        return Response.ok(estudiantes).build();
+        List<EstudianteRepresentation> estudiantes = estudianteService.listarTodos();
+        return Response.ok(this.construirLinks(estudiantes)).build();
+    }
+    private List<EstudianteRepresentation> construirLinks(List<EstudianteRepresentation> lista) {
+        lista.forEach(this::construirLinks);
+        return lista;
     }
 
     @GET
     @Path("/{id}")
     public Response consultarPorId(@PathParam("id") Integer id) {
-        Estudiante estudiante = estudianteService.consultarPorId(id);
+        EstudianteRepresentation estudiante = estudianteService.consultarPorId(id);
         if (estudiante == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(estudiante).build();
+        
+        return this.construirLinks(estudiante)
+            != null ? Response.ok(this.construirLinks(estudiante)).build()
+            : Response.status(Response.Status.NOT_FOUND).build();
     }
 
     
@@ -62,7 +74,7 @@ public class EstudianteResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response actualizarEstudiante(@PathParam("id") Integer id, Estudiante estudiante) {
-        Estudiante estudianteActualizado = estudianteService.consultarPorId(id);
+        EstudianteRepresentation estudianteActualizado = estudianteService.consultarPorId(id);
         if (estudianteActualizado == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -73,7 +85,7 @@ public class EstudianteResource {
     @DELETE
     @Path("/{id}")
     public Response eliminarEstudiante(@PathParam("id") Integer id) {
-        Estudiante estudiante = estudianteService.consultarPorId(id);
+        EstudianteRepresentation estudiante = estudianteService.consultarPorId(id);
         if (estudiante == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -85,7 +97,7 @@ public class EstudianteResource {
     @Path("/provincia")
     @Produces(MediaType.APPLICATION_JSON)
     public Response buscarPorProvincia(@QueryParam("provincia") String provincia) {
-        List<Estudiante> estudiantes = estudianteService.buscarPorProvincia(provincia);
+        List<EstudianteRepresentation> estudiantes = estudianteService.buscarPorProvincia(provincia);
         return Response.ok(estudiantes).build();
     }
 
@@ -95,14 +107,14 @@ public class EstudianteResource {
     public Response buscarPorProvinciaGenero(
             @QueryParam("provincia") String provincia,
             @QueryParam("genero") String genero) {
-        List<Estudiante> estudiantes = estudianteService.buscarPorProvinciaGenero(provincia, genero);
+        List<EstudianteRepresentation> estudiantes = estudianteService.buscarPorProvinciaGenero(provincia, genero);
         return Response.ok(estudiantes).build();
     }
     @PATCH
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response actualizarParcial(@PathParam("id") Integer id, Estudiante estudiante) {
-        Estudiante estudianteExistente = estudianteService.consultarPorId(id);
+        EstudianteRepresentation estudianteExistente = estudianteService.consultarPorId(id);
         if (estudianteExistente == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -122,7 +134,7 @@ public class EstudianteResource {
         if (orden == null || orden.isEmpty()) {
             orden = "asc";
         }
-        List<Estudiante> estudiantes = estudianteService.listarOrdenados(campo, orden);
+        List<EstudianteRepresentation> estudiantes = estudianteService.listarOrdenados(campo, orden);
         return Response.ok(estudiantes).build();
     }
 
@@ -138,14 +150,34 @@ public class EstudianteResource {
         if (edadMax == null) {
             edadMax = 100;
         }
-        List<Estudiante> estudiantes = estudianteService.buscarPorRangoEdad(edadMin, edadMax);
+        List<EstudianteRepresentation> estudiantes = estudianteService.buscarPorRangoEdad(edadMin, edadMax);
         return Response.ok(estudiantes).build();
     }
 
     @GET
     @Path("/{idEstudiante}/hijos")
-    public List<Hijo> buscarPorIdEstudiante(@PathParam("idEstudiante") Long idEstudiante) {
+    public List<uce.edu.web.api.representation.HijoRepresentation> buscarPorIdEstudiante(@PathParam("idEstudiante") Long idEstudiante) {
         return this.hijoService.buscarPorIdEstudiante(idEstudiante);
+    }
+
+    private EstudianteRepresentation construirLinks(EstudianteRepresentation er){
+        String self = this.uriInfo.getBaseUriBuilder()
+            .path(EstudianteResource.class)
+            .path(EstudianteResource.class, "consultarPorId")
+            .build(er.getId())
+            .toString();
+
+        String hijos = this.uriInfo.getBaseUriBuilder()
+            .path(EstudianteResource.class)
+            .path(EstudianteResource.class, "buscarPorIdEstudiante")
+            .build(er.getId())
+            .toString();
+
+        er.hijosLink = List.of(
+            new uce.edu.web.api.representation.LinkDto(self, "self"),
+            new uce.edu.web.api.representation.LinkDto(hijos, "hijos")
+        );
+        return er;
     }
 
 }
