@@ -76,7 +76,7 @@ public class EstudianteResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed("admin")
+    @RolesAllowed({"admin", "user", "docente"})
     public Response actualizarEstudiante(@PathParam("id") Integer id, Estudiante estudiante) {
         EstudianteRepresentation estudianteActualizado = estudianteService.consultarPorId(id);
         if (estudianteActualizado == null) {
